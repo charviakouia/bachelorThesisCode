@@ -37,7 +37,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        Thread.currentThread().setContextClassLoader(new MemoryClassLoader());
         String targetName = ExampleClass.class.getName();
         IRuntime runtime = new LoggerRuntime();
         Instrumenter instrumenter = new Instrumenter(runtime);
@@ -48,7 +47,7 @@ public class Main {
         runtime.startup(runtimeData);
         MemoryClassLoader memoryClassLoader = new MemoryClassLoader();
         memoryClassLoader.addDefinition(targetName, instrumented);
-        Class<?> targetClass = memoryClassLoader.loadClass(targetName);
+        Thread.currentThread().setContextClassLoader(memoryClassLoader);
 
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         LauncherDiscoveryRequest ldr = LauncherDiscoveryRequestBuilder
