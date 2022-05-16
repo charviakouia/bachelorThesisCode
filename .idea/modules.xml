@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/bachelorThesisCode.iml" filepath="$PROJECT_DIR$/.idea/bachelorThesisCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cli/commons-cli.iml" filepath="$PROJECT_DIR$/cli/commons-cli.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exampleProject/exampleProject.iml" filepath="$PROJECT_DIR$/exampleProject/exampleProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/firstThesisProgram/firstThesisProgram.iml" filepath="$PROJECT_DIR$/firstThesisProgram/firstThesisProgram.iml" />
+    </modules>
+  </component>
+</project>
