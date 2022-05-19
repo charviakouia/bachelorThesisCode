@@ -1,6 +1,7 @@
 
 package ivansCode;
 
+import com.sun.tools.attach.VirtualMachine;
 import exampleRootPackage.ExampleClass;
 import exampleRootPackage.ExampleClassTest;
 import org.jacoco.core.analysis.Analyzer;
@@ -24,30 +25,27 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.LoggingListener;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.Instrumentation;
+import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.System.out;
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String targetName = ExampleClass.class.getName();
         IRuntime runtime = new LoggerRuntime();
-        Instrumenter instrumenter = new Instrumenter(runtime);
-        InputStream original = getTargetClass(targetName);
-        byte[] instrumented = instrumenter.instrument(original, targetName);
-        original.close();
         RuntimeData runtimeData = new RuntimeData();
         runtime.startup(runtimeData);
-        MemoryClassLoader memoryClassLoader = new MemoryClassLoader();
-        memoryClassLoader.addDefinition(targetName, instrumented);
-        Thread.currentThread().setContextClassLoader(memoryClassLoader);
 
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         LauncherDiscoveryRequest ldr = LauncherDiscoveryRequestBuilder
@@ -60,21 +58,23 @@ public class Main {
 
         launcher.execute(testPlan, listener);
         TestExecutionSummary summary = listener.getSummary();
-        summary.printTo(new PrintWriter(System.out));
+        summary.printTo(new PrintWriter(out));
 
-        final ExecutionDataStore executionData = new ExecutionDataStore();
-        final SessionInfoStore sessionInfos = new SessionInfoStore();
-        runtimeData.collect(executionData, sessionInfos, false);
         runtime.shutdown();
+        ExecutionDataStore executionData = new ExecutionDataStore();
+        SessionInfoStore sessionInfos = new SessionInfoStore();
+        runtimeData.collect(executionData, sessionInfos, false);
 
-        final CoverageBuilder coverageBuilder = new CoverageBuilder();
-        final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
-        original = getTargetClass(targetName);
-        analyzer.analyzeClass(original, targetName);
+        CoverageBuilder coverageBuilder = new CoverageBuilder();
+        Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
+
+        String className = ExampleClass.class.getName();
+        InputStream original = getTargetClass(className);
+        analyzer.analyzeClass(original, className);
         original.close();
 
         for (final IClassCoverage cc : coverageBuilder.getClasses()) {
-            System.out.printf("Coverage of class %s%n", cc.getName());
+            out.printf("Coverage of class %s%n", cc.getName());
             printCounter("instructions", cc.getInstructionCounter());
             printCounter("branches", cc.getBranchCounter());
             printCounter("lines", cc.getLineCounter());
@@ -84,28 +84,8 @@ public class Main {
 
     }
 
-    public static class MemoryClassLoader extends ClassLoader {
-
-        private final Map<String, byte[]> definitions = new HashMap<>();
-
-        public void addDefinition(final String name, final byte[] bytes) {
-            definitions.put(name, bytes);
-        }
-
-        @Override
-        protected Class<?> loadClass(final String name, final boolean resolve)
-                throws ClassNotFoundException {
-            final byte[] bytes = definitions.get(name);
-            if (bytes != null) {
-                return defineClass(name, bytes, 0, bytes.length);
-            }
-            return super.loadClass(name, resolve);
-        }
-
-    }
-
-    private static InputStream getTargetClass(String targetName){
-        String resource = '/' + targetName.replace('.', '/') + ".class";
+    private static InputStream getTargetClass(final String name) {
+        final String resource = '/' + name.replace('.', '/') + ".class";
         return Main.class.getResourceAsStream(resource);
     }
 
