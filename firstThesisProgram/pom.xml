@@ -24,8 +24,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>ivansCode.CustomJacocoAgent</Premain-Class>
-                            <Agent-Class>ivansCode.CustomJacocoAgent</Agent-Class>
+                            <Premain-Class>ivansCode.agent.CustomAgent</Premain-Class>
+                            <Agent-Class>ivansCode.agent.CustomAgent</Agent-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>
@@ -61,18 +61,22 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>ivansCode</groupId>
-            <artifactId>exampleProject</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>compile</scope>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
+            <version>3.24.2</version>
         </dependency>
         <dependency>
-            <groupId>ivansCode</groupId>
-            <artifactId>exampleProject</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <groupId>com.github.java-decompiler</groupId>
+            <artifactId>jd-core</artifactId>
+            <version>1.1.3</version>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
 </project>

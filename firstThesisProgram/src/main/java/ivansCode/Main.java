@@ -2,8 +2,8 @@
 package ivansCode;
 
 import com.sun.tools.attach.VirtualMachine;
-import exampleRootPackage.ExampleClass;
-import exampleRootPackage.ExampleClassTest;
+import ivansCode.techniques.ExampleClass;
+import ivansCode.techniques.ExampleTechnique;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IClassCoverage;
@@ -32,6 +32,8 @@ import java.io.PrintWriter;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,10 +45,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        IRuntime runtime = new LoggerRuntime();
-        RuntimeData runtimeData = new RuntimeData();
-        runtime.startup(runtimeData);
-
+        /*
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         LauncherDiscoveryRequest ldr = LauncherDiscoveryRequestBuilder
                 .request()
@@ -59,40 +58,21 @@ public class Main {
         launcher.execute(testPlan, listener);
         TestExecutionSummary summary = listener.getSummary();
         summary.printTo(new PrintWriter(out));
+         */
 
-        runtime.shutdown();
-        ExecutionDataStore executionData = new ExecutionDataStore();
-        SessionInfoStore sessionInfos = new SessionInfoStore();
-        runtimeData.collect(executionData, sessionInfos, false);
+        // Path home = Path.of(System.getProperty("user.home") + "/Desktop");
 
-        CoverageBuilder coverageBuilder = new CoverageBuilder();
-        Analyzer analyzer = new Analyzer(executionData, coverageBuilder);
+        String javaSourceCodePathStr =
+                "/Users/ivancharviakou/Desktop/bachelorThesisCode/" +
+                        "firstThesisProgram/src/main/java/ivansCode/techniques/ExampleClass.java";
+        Path javaSourceCodePath = Paths.get(javaSourceCodePathStr);
 
-        String className = ExampleClass.class.getName();
-        InputStream original = getTargetClass(className);
-        analyzer.analyzeClass(original, className);
-        original.close();
 
-        for (final IClassCoverage cc : coverageBuilder.getClasses()) {
-            out.printf("Coverage of class %s%n", cc.getName());
-            printCounter("instructions", cc.getInstructionCounter());
-            printCounter("branches", cc.getBranchCounter());
-            printCounter("lines", cc.getLineCounter());
-            printCounter("methods", cc.getMethodCounter());
-            printCounter("complexity", cc.getComplexityCounter());
-        }
+        ExampleTechnique exampleTechnique = new ExampleTechnique(ExampleClass.class, javaSourceCodePath);
+        Class<?> smth = exampleTechnique.next();
+        Object instance = smth.getDeclaredConstructor().newInstance();
+        System.out.println(((ExampleClass) instance).add(4, 5));
 
-    }
-
-    private static InputStream getTargetClass(final String name) {
-        final String resource = '/' + name.replace('.', '/') + ".class";
-        return Main.class.getResourceAsStream(resource);
-    }
-
-    private static void printCounter(final String unit, final ICounter counter) {
-        final Integer missed = counter.getMissedCount();
-        final Integer total = counter.getTotalCount();
-        System.out.printf("%s of %s %s missed%n", missed, total, unit);
     }
 
 }
