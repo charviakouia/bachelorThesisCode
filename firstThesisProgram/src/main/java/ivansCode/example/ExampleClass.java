@@ -1,4 +1,4 @@
-package ivansCode.techniques;
+package ivansCode.example;
 
 public class ExampleClass {
 

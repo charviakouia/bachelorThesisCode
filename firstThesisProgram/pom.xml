@@ -24,8 +24,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>ivansCode.agent.CustomAgent</Premain-Class>
-                            <Agent-Class>ivansCode.agent.CustomAgent</Agent-Class>
+                            <Premain-Class>ivansCode.utils.CustomAgent</Premain-Class>
+                            <Agent-Class>ivansCode.utils.CustomAgent</Agent-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>

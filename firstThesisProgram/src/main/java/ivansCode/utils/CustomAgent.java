@@ -1,4 +1,4 @@
-package ivansCode.agent;
+package ivansCode.utils;
 
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
