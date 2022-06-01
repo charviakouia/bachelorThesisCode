@@ -8,6 +8,9 @@ import java.util.*;
 
 public class KillMatrix {
 
+    public static final String FILE_NAME = "matrix";
+    public static final String FILE_TYPE = ".txt";
+
     private final Map<Pair<String, Mutant>, Boolean> killMatrixMap = new TreeMap<>();
     private final Set<String> testNames = new TreeSet<>();
     private final Set<Mutant> mutants = new TreeSet<>();
@@ -27,8 +30,8 @@ public class KillMatrix {
         String[] testNamesArr = testNames.toArray(new String[0]);
         Mutant[] mutantsArr = mutants.toArray(new Mutant[0]);
         builder.append(" ".repeat(cellSize));
-        for (int i = 0; i < mutantsArr.length; i++){
-            String intValue = Integer.toString(i);
+        for (Mutant value : mutantsArr) {
+            String intValue = Integer.toString(value.getId());
             builder.append("|").append(" ".repeat(Math.max(0, cellSize - intValue.length()))).append(intValue);
         }
         builder.append("|").append(System.getProperty("line.separator"));

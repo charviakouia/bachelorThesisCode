@@ -93,4 +93,9 @@ public class ExampleTechnique implements Technique {
         }
     }
 
+    @Override
+    public String getDescription(){
+        return "exampleTechnique";
+    }
+
 }

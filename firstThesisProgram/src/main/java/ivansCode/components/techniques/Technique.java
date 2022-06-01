@@ -4,4 +4,8 @@ import ivansCode.components.Mutant;
 
 import java.util.Iterator;
 
-public interface Technique extends Iterator<Mutant> {}
+public interface Technique extends Iterator<Mutant> {
+
+    String getDescription();
+
+}

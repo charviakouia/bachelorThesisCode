@@ -2,6 +2,7 @@
 package ivansCode;
 
 import ivansCode.components.Mutant;
+import ivansCode.components.QuineBuilder;
 import ivansCode.components.techniques.Technique;
 import ivansCode.components.techniques.TechniqueFactory;
 import ivansCode.components.testing.KillMatrix;
@@ -9,7 +10,10 @@ import ivansCode.components.testing.TestResults;
 import ivansCode.utils.ApplicationProperties;
 import ivansCode.components.Project;
 import ivansCode.components.testing.TestExecutor;
+import ivansCode.utils.IOUtility;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
@@ -27,21 +31,25 @@ public class Main {
             for (TechniqueFactory<? extends Technique> factory : techniqueFactories){
                 int numConfigurations = factory.getNumConfigurations();
                 for (int i = 0; i < numConfigurations; i++){
-                    Technique technique = factory.getTechnique(i, project);
+                    QuineBuilder quineBuilder = new QuineBuilder(project.getOriginalSourceCode());
                     KillMatrix matrix = new KillMatrix();
+                    Technique technique = factory.getTechnique(i, project);
                     while (technique.hasNext()){
                         Mutant mutant = technique.next();
                         mutant.install();
                         TestResults testResults = testExecutor.execute();
                         testResults.writeTo(matrix, mutant);
+                        quineBuilder.add(mutant);
                     }
-                    System.out.println(matrix);
+                    Path savePath = Path.of(ApplicationProperties.getOutputPath().toString(),
+                            project.getSubjectClassName(), technique.getDescription());
+                    IOUtility.saveTo(savePath, KillMatrix.FILE_NAME, KillMatrix.FILE_TYPE,
+                            matrix.toString().getBytes(StandardCharsets.UTF_8) , true);
+                    IOUtility.compileTo(savePath, QuineBuilder.CLASS_NAME, quineBuilder.build(), true);
                 }
             }
         }
 
-        // TODO: Write the quine-programs
-        // TODO: Save the quine-programs and matrices
         // TODO: Write the PIT and CodeBERT techniques
         // TODO: Update the properties file
 
