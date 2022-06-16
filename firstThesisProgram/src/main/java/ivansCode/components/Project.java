@@ -8,12 +8,12 @@ import java.nio.file.Path;
 
 public class Project {
 
-    private String subjectClassName;
-    private Path sourceCodePath;
-    private String[] testClassNames;
+    private final Class<?> subjectClass;
+    private final Path sourceCodePath;
+    private final String[] testClassNames;
 
-    public Project(String subjectClassName, Path sourceCodePath, String[] testClassNames) {
-        this.subjectClassName = subjectClassName;
+    public Project(Class<?> subjectClass, Path sourceCodePath, String[] testClassNames) {
+        this.subjectClass = subjectClass;
         this.sourceCodePath = sourceCodePath;
         this.testClassNames = testClassNames;
     }
@@ -22,28 +22,16 @@ public class Project {
         return String.join("", Files.readLines(sourceCodePath.toFile(), StandardCharsets.UTF_8));
     }
 
-    public String getSubjectClassName() {
-        return subjectClassName;
-    }
-
-    public void setSubjectClassName(String subjectClassName) {
-        this.subjectClassName = subjectClassName;
+    public Class<?> getSubjectClass() {
+        return subjectClass;
     }
 
     public Path getSourceCodePath() {
         return sourceCodePath;
     }
 
-    public void setSourceCodePath(Path sourceCodePath) {
-        this.sourceCodePath = sourceCodePath;
-    }
-
     public String[] getTestClassNames() {
         return testClassNames;
-    }
-
-    public void setTestClassNames(String[] testClassNames) {
-        this.testClassNames = testClassNames;
     }
 
 }

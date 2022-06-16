@@ -1,5 +1,8 @@
 package ivansCode.components;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import ivansCode.utils.CustomAgent;
 
 import java.util.Objects;
@@ -16,8 +19,8 @@ public class Mutant implements Comparable<Mutant> {
     public Mutant(Class<?> originalClass, byte[] mutatedBytes, String sourceCode) {
         this.originalClass = originalClass;
         this.mutatedBytes = mutatedBytes;
-        this.sourceCode = sourceCode;
-        this.id = ++idCounter;
+        this.id = idCounter++;
+        this.sourceCode = StaticJavaParser.parse(sourceCode).toString();
     }
 
     public boolean install(){
@@ -37,18 +40,18 @@ public class Mutant implements Comparable<Mutant> {
             return false;
         } else {
             Mutant mutant = (Mutant) o;
-            return id == mutant.id;
+            return sourceCode.equals(mutant.sourceCode);
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(sourceCode);
     }
 
     @Override
     public int compareTo(Mutant o) {
-        return Integer.compare(id, o.id);
+        return CharSequence.compare(sourceCode, o.sourceCode);
     }
 
     public int getId() {

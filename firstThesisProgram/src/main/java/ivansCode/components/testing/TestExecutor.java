@@ -26,8 +26,12 @@ public class TestExecutor {
                 ldrb.selectors(DiscoverySelectors.selectMethod(methodName));
                 ldrb.build();
                 LauncherDiscoveryRequest ldr = ldrb.build();
-                launcher.execute(launcher.discover(ldr), listener);
-                testResults.setPassed(methodName, (listener.getSummary().getTestsSucceededCount() >= 1));
+                try {
+                    launcher.execute(launcher.discover(ldr), listener);
+                    testResults.setPassed(methodName, (listener.getSummary().getTestsSucceededCount() >= 1));
+                } catch (Exception e){
+                    testResults.setPassed(methodName, false);
+                }
             }
             return testResults;
         }

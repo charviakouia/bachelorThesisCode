@@ -36,23 +36,21 @@ public class Main {
                     Technique technique = factory.getTechnique(i, project);
                     while (technique.hasNext()){
                         Mutant mutant = technique.next();
-                        mutant.install();
-                        TestResults testResults = testExecutor.execute();
-                        testResults.writeTo(matrix, mutant);
-                        quineBuilder.add(mutant);
+                        if (mutant.install()){
+                            TestResults testResults = testExecutor.execute();
+                            testResults.writeTo(matrix, mutant);
+                            quineBuilder.add(mutant);
+                        }
                     }
                     Path savePath = Path.of(ApplicationProperties.getOutputPath().toString(),
-                            project.getSubjectClassName(), technique.getDescription());
+                            project.getSubjectClass().getName(), technique.getDescription());
                     IOUtility.saveTo(savePath, KillMatrix.FILE_NAME, KillMatrix.FILE_TYPE,
                             matrix.toString().getBytes(StandardCharsets.UTF_8) , true);
                     IOUtility.compileTo(savePath, QuineBuilder.CLASS_NAME, quineBuilder.build(), true);
                 }
             }
         }
-
-        // TODO: Write the PIT and CodeBERT techniques
-        // TODO: Update the properties file
-
+        // TODO: Complete the properties file
     }
 
 }

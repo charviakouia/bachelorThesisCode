@@ -30,18 +30,18 @@ public final class ApplicationProperties {
         return properties.getProperty(key);
     }
 
-    public static List<Project> getProjects(){
+    public static List<Project> getProjects() throws ClassNotFoundException {
         String[] projectArr = getProperty("projectList").split(";");
         List<Project> projects = new ArrayList<>();
         for (String projectName : projectArr){
-            String subjectClassName = getProperty(String.format("projects.%s.className", projectName));
+            Class<?> subjectClass = Class.forName(getProperty(String.format("projects.%s.className", projectName)));
             Path sourceCodePath = Path.of(getProperty(String.format("projects.%s.sourceCodePath", projectName)));
             List<String> testClassNames = new ArrayList<>();
             int numTestClasses = Integer.parseInt(getProperty(String.format("projects.%s.numTestCases", projectName)));
             for (int i = 0; i < numTestClasses; i++){
                 testClassNames.add(getProperty(String.format("projects.%s.testCases.%d.methodName", projectName, i)));
             }
-            projects.add(new Project(subjectClassName, sourceCodePath, testClassNames.toArray(new String[0])));
+            projects.add(new Project(subjectClass, sourceCodePath, testClassNames.toArray(new String[0])));
         }
         return projects;
     }

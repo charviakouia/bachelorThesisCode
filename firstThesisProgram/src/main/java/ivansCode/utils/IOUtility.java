@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 
 public final class IOUtility {
 
+    private IOUtility(){}
+
     public static byte[] compileTo(Path destinationPath, String name, String sourceCode, boolean deleteIfExists)
             throws IOException {
         Files.createDirectories(destinationPath);
@@ -25,8 +27,11 @@ public final class IOUtility {
         }
         Files.writeString(file.toPath(), sourceCode);
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        compiler.run(null, null, null, file.getPath());
-        return Files.readAllBytes(Paths.get(destinationPath.toString(), name + ".class"));
+        if (compiler.run(null, null, null, file.getPath()) != 0){
+            return null;
+        } else {
+            return Files.readAllBytes(Paths.get(destinationPath.toString(), name + ".class"));
+        }
     }
 
     public static void saveTo(Path destinationPath, String name, String type, byte[] content, boolean deleteIfExists)
