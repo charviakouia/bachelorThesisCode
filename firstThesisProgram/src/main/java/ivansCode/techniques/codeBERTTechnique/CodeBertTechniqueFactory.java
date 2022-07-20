@@ -11,7 +11,6 @@ import java.util.List;
 
 public class CodeBertTechniqueFactory implements TechniqueFactory<CodeBERTTechnique> {
 
-    /*
     private final List<Pair<Double, Double>> thresholds = List.of(
             Pair.of(0.0, 0.2),
             Pair.of(0.0, 0.4),
@@ -22,11 +21,6 @@ public class CodeBertTechniqueFactory implements TechniqueFactory<CodeBERTTechni
             Pair.of(0.4, 1.0),
             Pair.of(0.6, 1.0),
             Pair.of(0.8, 1.0)
-    );
-     */
-
-    private final List<Pair<Double, Double>> thresholds = List.of(
-            Pair.of(0.0, 1.0)
     );
 
     @Override

@@ -8,20 +8,20 @@ public class CustomAgent {
 
     private static Instrumentation instrumentation;
 
-    public static void premain(final String agentArgs, final Instrumentation inst){
+    public static void premain(final String agentArgs, final Instrumentation inst) {
         instrumentation = inst;
     }
 
-    public static void agentmain(final String agentArguments, final Instrumentation inst){
+    public static void agentmain(final String agentArguments, final Instrumentation inst) {
         instrumentation = inst;
     }
 
-    public static boolean introduceMutation(final Class<?> toBeReplacedCls, final byte[] bytes){
+    public static boolean introduceMutation(final Class<?> toBeReplacedCls, final byte[] bytes) {
         final ClassDefinition definition = new ClassDefinition(toBeReplacedCls, bytes);
         try {
             instrumentation.redefineClasses(definition);
             return true;
-        } catch (ClassNotFoundException | UnmodifiableClassException | VerifyError | InternalError e){
+        } catch (ClassNotFoundException | UnmodifiableClassException | VerifyError | InternalError e) {
             e.printStackTrace();
             return false;
         }

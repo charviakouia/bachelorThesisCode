@@ -1,6 +1,6 @@
-package ivansCode.components;
+package ivansCode.techniques.codeBERTTechnique;
 
-public class CodeBERTOption {
+public class CodeBERTOption implements Cloneable {
 
     private double score;
     private int token;
@@ -55,4 +55,19 @@ public class CodeBERTOption {
                 ", sequence='" + sequence + '\'' +
                 '}';
     }
+
+    @Override
+    public CodeBERTOption clone() {
+        try {
+            CodeBERTOption clone = (CodeBERTOption) super.clone();
+            clone.score = score;
+            clone.token = token;
+            clone.tokenString = tokenString;
+            clone.sequence = sequence;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
 }

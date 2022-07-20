@@ -26,17 +26,17 @@ public class Main {
         List<TechniqueFactory<? extends Technique>> techniqueFactories = ApplicationProperties.getFactories();
         TestExecutor testExecutor = new TestExecutor();
 
-        for (Project project : projects){
+        for (Project project : projects) {
             testExecutor.setProject(project);
-            for (TechniqueFactory<? extends Technique> factory : techniqueFactories){
+            for (TechniqueFactory<? extends Technique> factory : techniqueFactories) {
                 int numConfigurations = factory.getNumConfigurations();
-                for (int i = 0; i < numConfigurations; i++){
+                for (int i = 0; i < numConfigurations; i++) {
                     QuineBuilder quineBuilder = new QuineBuilder(project.getOriginalSourceCode());
                     KillMatrix matrix = new KillMatrix();
                     Technique technique = factory.getTechnique(i, project);
-                    while (technique.hasNext()){
+                    while (technique.hasNext()) {
                         Mutant mutant = technique.next();
-                        if (mutant.install()){
+                        if (mutant.install()) {
                             TestResults testResults = testExecutor.execute();
                             testResults.writeTo(matrix, mutant);
                             quineBuilder.add(mutant);
@@ -45,7 +45,7 @@ public class Main {
                     Path savePath = Path.of(ApplicationProperties.getOutputPath().toString(),
                             project.getSubjectClass().getName(), technique.getDescription());
                     IOUtility.saveTo(savePath, KillMatrix.FILE_NAME, KillMatrix.FILE_TYPE,
-                            matrix.toString().getBytes(StandardCharsets.UTF_8) , true);
+                            matrix.toString().getBytes(StandardCharsets.UTF_8), true);
                     IOUtility.compileTo(savePath, QuineBuilder.CLASS_NAME, quineBuilder.build(), true);
                 }
             }

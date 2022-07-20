@@ -62,6 +62,8 @@ public final class ApplicationProperties {
         return Path.of(getProperty("tempPath"));
     }
 
-    public static Path getOutputPath(){ return Path.of(getProperty("outputPath")); }
+    public static Path getOutputPath(){
+        return Path.of(getProperty("outputPath"));
+    }
 
 }

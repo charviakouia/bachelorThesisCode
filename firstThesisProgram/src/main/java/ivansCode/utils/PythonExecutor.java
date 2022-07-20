@@ -13,34 +13,6 @@ import java.util.stream.Collectors;
 
 public final class PythonExecutor {
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(executeScript("""
-                package ivansCode.example;
-                                
-                public class ExampleClass {
-                                
-                    public static int add(int a, int b){
-                        return a + b;
-                    }
-                                
-                    public static int subtract(int a, int b){
-                        return a - b;
-                    }
-                                
-                    public static int multiply(int a, int b){
-                        return a <mask> b;
-                    }
-                                
-                    public static int divide(int a, int b){
-                        return a / b;
-                    }
-                                
-                }
-                """
-                .replaceAll("\\s+", " ")).trim()
-        );
-    }
-
     public static String executeScript(String... params) throws IOException {
 
         ProcessBuilder processBuilder = new ProcessBuilder(initializeArray(params));
