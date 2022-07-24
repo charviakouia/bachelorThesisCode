@@ -3,18 +3,22 @@ package ivansCode.techniques.PITTechnique;
 import ivansCode.components.Project;
 import ivansCode.components.techniques.TechniqueFactory;
 
-public class PITTechniqueFactory implements TechniqueFactory<PITTechnique> {
+import java.io.IOException;
 
-    // TODO: Implement
+public class PITTechniqueFactory implements TechniqueFactory<PITTechnique> {
 
     @Override
     public int getNumConfigurations() {
-        return 0;
+        return 1;
     }
 
     @Override
     public PITTechnique getTechnique(int index, Project project) {
-        return null;
+        try {
+            return new PITTechnique(project.getSourceCodePath(), project.getSubjectClass());
+        } catch (IOException e){
+            throw new IllegalStateException("Couldn't get the source code from the passed project", e);
+        }
     }
 
 }

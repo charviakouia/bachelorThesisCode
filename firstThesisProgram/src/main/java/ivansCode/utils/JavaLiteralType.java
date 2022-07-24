@@ -10,7 +10,7 @@ public enum JavaLiteralType {
     NULL("null"),
     CHAR("Character");
 
-    private String stringValue;
+    private final String stringValue;
 
     JavaLiteralType(String stringValue){
         this.stringValue = stringValue;

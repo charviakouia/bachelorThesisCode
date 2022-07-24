@@ -1,5 +1,7 @@
 package ivansCode.utils;
 
+import org.apache.commons.io.FileUtils;
+
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.File;
@@ -48,5 +50,28 @@ public final class IOUtility {
         }
         Files.write(file.toPath(), content);
     }
+
+    public static void clearDirectory(Path path) throws IOException {
+        Files.list(path).forEach(filePath -> {
+            try {
+                if (Files.isDirectory(filePath)){
+                    FileUtils.deleteDirectory(filePath.toFile());
+                } else {
+                    Files.delete(filePath);
+                }
+            } catch (IOException e){
+                throw new IllegalStateException("Couldn't clear the directory");
+            }
+        });
+    }
+
+    /*
+    public static void main(String[] args) throws IOException {
+
+        ApplicationProperties.readApplicationProperties();
+        clearDirectory(ApplicationProperties.getTempPath());
+
+    }
+     */
 
 }
