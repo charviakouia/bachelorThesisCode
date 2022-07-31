@@ -3,6 +3,7 @@ package ivansCode.components.testing;
 import ivansCode.components.Mutant;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.units.qual.K;
 
 import java.util.*;
 
@@ -47,4 +48,12 @@ public class KillMatrix {
         }
         return builder.toString();
     }
+
+    public static void main(String[] args){
+
+        KillMatrix killMatrix = new KillMatrix();
+        System.out.println(killMatrix.toString());
+
+    }
+
 }
