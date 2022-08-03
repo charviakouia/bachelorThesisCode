@@ -1,4 +1,4 @@
-package utils;
+package ivansCode.utils;
 
 import ivansCode.components.ProjectTestSuite;
 

@@ -1,4 +1,4 @@
-package utils;
+package ivansCode.utils;
 
 import java.util.regex.Pattern;
 

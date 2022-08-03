@@ -108,6 +108,11 @@
             <artifactId>decompiler-fernflower</artifactId>
             <version>5.3.0.Final</version>
         </dependency>
+        <dependency>
+            <groupId>ivansCode</groupId>
+            <artifactId>exampleProject</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

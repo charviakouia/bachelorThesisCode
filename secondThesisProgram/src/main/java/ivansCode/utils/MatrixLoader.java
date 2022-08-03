@@ -1,4 +1,4 @@
-package utils;
+package ivansCode.utils;
 
 import ivansCode.components.Matrix;
 import ivansCode.components.ProjectTestSuite;
@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,18 +82,11 @@ public final class MatrixLoader {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static Map<Integer, Set<String>> getKillMap(Path experimentPath, ProjectTestSuite projectTestSuite)
+            throws IOException {
 
-        ApplicationProperties.readApplicationProperties();
-
-        List<ProjectTestSuite> projectTestSuites = ApplicationProperties.readProjectTestSuites();
-        ProjectTestSuite firstTestSuite = projectTestSuites.get(0);
-
-        Path pathToData = ApplicationProperties.getDataPath().resolve(firstTestSuite.getDirName()).resolve("gg");
-
-        Matrix matrix = MatrixLoader.loadMatrix(pathToData, firstTestSuite);
-
-        System.out.println();
+        Matrix fstMatrix = MatrixLoader.loadMatrix(experimentPath, projectTestSuite);
+        return fstMatrix.getKillMap();
 
     }
 

@@ -1,6 +1,6 @@
 package ivansCode.components;
 
-import utils.ApplicationProperties;
+import ivansCode.utils.ApplicationProperties;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -41,6 +41,16 @@ public class ProjectTestSuite {
 
     public String getDirName() {
         return dirName;
+    }
+
+    public Map<String, Set<String>> getTestGroupMap(){
+
+        Map<String, Set<String>> result = new HashMap<>();
+        for (Map.Entry<String, Set<String>> entry : groupNameToGroup.entrySet()){
+            result.put(entry.getKey(), new HashSet<>(entry.getValue()));
+        }
+        return result;
+
     }
 
     public Set<String> getTestGroup(String groupName){

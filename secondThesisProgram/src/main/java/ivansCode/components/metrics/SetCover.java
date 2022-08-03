@@ -1,6 +1,5 @@
-package ivansCode.metrics;
+package ivansCode.components.metrics;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public final class SetCover {
@@ -76,30 +75,6 @@ public final class SetCover {
             }
         }
         return false;
-    }
-
-    public static void main(String[] args){
-
-        Set<Integer> resultKeys = greedyBigStep(
-                Map.of(
-                        0, Set.of(0, 2),
-                        1, Set.of(2, 3),
-                        2, Set.of(3, 4),
-                        3, Set.of(1, 2, 3, 4),
-                        4, Set.of(4)
-                ), 2);
-
-        System.out.println(Arrays.toString(resultKeys.toArray()));
-
-        /*
-        int[] startingCombination = new int[]{0, 1, 2};
-        int limit = 5;
-
-        do {
-            System.out.println(Arrays.toString(startingCombination));
-        } while (advanceCombination(limit, startingCombination));
-         */
-
     }
 
 }

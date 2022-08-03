@@ -94,7 +94,7 @@ public class CodeBERTTechnique implements Technique {
     @Override
     public String getDescription() {
         return String.format(
-                "{ name: CodeBERT, thresholdFrom: %,.2f, thresholdTo: %,.2f, useAllOperators: %b }",
+                "__name_CodeBERT__thresholdFrom_%,.2f__thresholdTo_%,.2f__useAllOperators_%b__",
                 thresholdFrom, thresholdTo, useAllOperators);
     }
 

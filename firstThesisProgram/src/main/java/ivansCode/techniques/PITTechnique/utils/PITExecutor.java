@@ -1,6 +1,5 @@
 package ivansCode.techniques.PITTechnique.utils;
 
-import ivansCode.example.src.A;
 import ivansCode.utils.ApplicationProperties;
 import joptsimple.internal.Strings;
 import org.pitest.mutationtest.commandline.MutationCoverageReport;

@@ -37,7 +37,7 @@ public class PITTechnique implements Technique {
 
     @Override
     public String getDescription() {
-        return "{ name: PIT }";
+        return "__name_PIT__";
     }
 
     @Override

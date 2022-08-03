@@ -1,6 +1,7 @@
 package ivansCode.components;
 
-import ivansCode.metrics.SetCover;
+import ivansCode.components.metrics.MutantSet;
+import ivansCode.components.metrics.SetCover;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
@@ -66,7 +67,76 @@ public class Matrix {
         return matrix[testNameToIndex.get(testName)][mutantIdToIndex.get(mutantId)];
     }
 
-    public Set<String> minimumTestSet(){
+    public Set<String> getMinimumTests(){
+        Map<String, Set<Integer>> testNameToMutantSet = getTestCoverMap();
+        return SetCover.greedyBigStep(testNameToMutantSet, 2);
+    }
+
+    public Set<Integer> getDisjointMutants(){
+        Map<Integer, Set<String>> killMap = getKillMap();
+        return MutantSet.disjointMutantSet(killMap);
+    }
+
+    public Set<String> getAllTests(){
+        return new HashSet<>(testNameToIndex.keySet());
+    }
+
+    public Set<Integer> getAllMutants(){
+        return new HashSet<>(mutantIdToIndex.keySet());
+    }
+
+    public Set<String> getKillingTests(int mutantId){
+        Set<String> result = new HashSet<>();
+        for (String testName : testNameToIndex.keySet()){
+            if (wasKilled(testName, mutantId)){
+                result.add(testName);
+            }
+        }
+        return result;
+    }
+
+    public Set<Integer> getNonEquivalentMutants(){
+        Set<Integer> result = getAllMutants();
+        result.removeAll(eqMutantSet);
+        return result;
+    }
+
+    public Set<Integer> getKilledMutants(){
+        Set<Integer> result = new HashSet<>();
+        for (Integer currentMutant : mutantIdToIndex.keySet()){
+            boolean wasKilled = false;
+            for (String currentTest : testNameToIndex.keySet()){
+                if (wasKilled(currentTest, currentMutant)){
+                    wasKilled = true;
+                    break;
+                }
+            }
+            if (wasKilled){
+                result.add(currentMutant);
+            }
+        }
+        return result;
+    }
+
+    public Set<Integer> getEquivalentMutants(){
+        return new HashSet<>(eqMutantSet);
+    }
+
+    public Map<Integer, Set<String>> getKillMap(){
+        Map<Integer, Set<String>> killMap = new HashMap<>();
+        for (Integer currentMutant : mutantIdToIndex.keySet()){
+            Set<String> currentTestSet = new HashSet<>();
+            for (String currentTestName : testNameToIndex.keySet()){
+                if (wasKilled(currentTestName, currentMutant)){
+                    currentTestSet.add(currentTestName);
+                }
+            }
+            killMap.put(currentMutant, currentTestSet);
+        }
+        return killMap;
+    }
+
+    public Map<String, Set<Integer>> getTestCoverMap(){
         Map<String, Set<Integer>> testNameToMutantSet = new HashMap<>();
         for (String testName : testNameToIndex.keySet()){
             Set<Integer> currentMutantSet = new HashSet<>();
@@ -77,11 +147,7 @@ public class Matrix {
             }
             testNameToMutantSet.put(testName, currentMutantSet);
         }
-        return SetCover.greedyBigStep(testNameToMutantSet, 2);
-    }
-
-    public Set<String> allTests(){
-        return testNameToIndex.keySet();
+        return testNameToMutantSet;
     }
 
 }

@@ -1,6 +1,5 @@
 package ivansCode.techniques.PITTechnique.utils;
 
-import ivansCode.example.src.A;
 import ivansCode.utils.ApplicationProperties;
 import ivansCode.utils.StringUtils;
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
