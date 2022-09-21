@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public final class ApplicationProperties {
 
@@ -20,7 +18,8 @@ public final class ApplicationProperties {
 
     public static void readApplicationProperties() throws IOException {
         properties = new Properties();
-        InputStream in = ApplicationProperties.class.getClassLoader().getResourceAsStream("properties.properties");
+        InputStream in = ApplicationProperties.class.getClassLoader()
+                .getResourceAsStream("properties.properties");
         assert in != null;
         properties.load(in);
         in.close();
@@ -30,18 +29,25 @@ public final class ApplicationProperties {
         return properties.getProperty(key);
     }
 
-    public static List<Project> getProjects() throws ClassNotFoundException {
+    public static List<Project> getProjects() throws IOException {
         String[] projectArr = getProperty("projectList").split(";");
         List<Project> projects = new ArrayList<>();
         for (String projectName : projectArr){
-            Class<?> subjectClass = Class.forName(getProperty(String.format("projects.%s.className", projectName)));
-            Path sourceCodePath = Path.of(getProperty(String.format("projects.%s.sourceCodePath", projectName)));
-            List<String> testClassNames = new ArrayList<>();
+            String className = getProperty(String.format("projects.%s.className", projectName));
+            String simpleClassName = getProperty(String.format("projects.%s.simpleClassName", projectName));
+            Path sourceCodePath = Path.of(Objects.requireNonNull(ApplicationProperties.class.getClassLoader()
+                    .getResource(getProperty(String.format("projects.%s.sourceCodePath", projectName)))).getPath());
+            Path targetCodePath = Path.of(Objects.requireNonNull(ApplicationProperties.class.getClassLoader()
+                    .getResource(getProperty(String.format("projects.%s.targetCodePath", projectName)))).getPath());
+            Path projectPath = Path.of(Objects.requireNonNull(ApplicationProperties.class.getClassLoader()
+                    .getResource(getProperty(String.format("projects.%s.projectPath", projectName)))).getPath());
+            Set<String> testClassNames = new HashSet<>();
             int numTestClasses = Integer.parseInt(getProperty(String.format("projects.%s.numTestCases", projectName)));
             for (int i = 0; i < numTestClasses; i++){
                 testClassNames.add(getProperty(String.format("projects.%s.testCases.%d.methodName", projectName, i)));
             }
-            projects.add(new Project(subjectClass, sourceCodePath, testClassNames.toArray(new String[0])));
+            projects.add(new Project(
+                    className, simpleClassName, sourceCodePath, targetCodePath, projectPath, testClassNames));
         }
         return projects;
     }

@@ -47,8 +47,9 @@ public class UnaryConditionalPresent extends CommonPolicy {
 
     @Override
     public void addOptions(List<CodeBERTOption> options, String beforeSequence, String afterSequence) {
-        Assertions.assertEquals(0, options.stream().filter(o -> o.getTokenString().isBlank()).count());
-        includeOption(options, beforeSequence + afterSequence, "", 0.1);
+        if (options.stream().noneMatch(o -> o.getTokenString().isBlank())){
+            includeOption(options, beforeSequence + afterSequence, "", 0.1);
+        }
     }
 
 }

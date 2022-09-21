@@ -95,7 +95,7 @@ public class ParsedType {
     }
 
     public boolean isBitwiseType() {
-        return bitwiseTypes.contains(typeName);
+        return !isUndefined() && bitwiseTypes.contains(typeName);
     }
 
     public ParsedType compareNumericalTypes(ParsedType other){

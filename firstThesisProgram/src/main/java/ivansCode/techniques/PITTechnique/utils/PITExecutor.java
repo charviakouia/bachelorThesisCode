@@ -18,22 +18,32 @@ import java.util.stream.Collectors;
 
 public class PITExecutor {
 
-    public static List<byte[]> getByteCode(Path destinationPath, Class<?> targetClass, Path sourceCodePath,
-                                           String[] testPaths) throws IOException {
+    public enum ExecutionSetting {
 
-        String[] array = new String[]{
-                "--reportDir", destinationPath.toString(),
-                "--targetClasses", targetClass.getCanonicalName(),
-                "--targetTests", Strings.join(testPaths, ";"),
-                "--sourceDirs", sourceCodePath.toString(),
-                "--outputFormats", "XML",
-                "--features", "+export"
-        };
+        DEFAULTS("DEFAULTS"),
+        STRONGER("STRONGER"),
+        ALL("ALL");
 
-        MutationCoverageReport.main(array);
+        private final String commandLineSetting;
+        ExecutionSetting(String commandLineSetting){
+            this.commandLineSetting = commandLineSetting;
+        }
 
-        Path pathToByteCode = destinationPath.resolve("export");
-        for (String pathElement : targetClass.getCanonicalName().split("\\.")){
+        public String getCommandLineSetting() {
+            return commandLineSetting;
+        }
+
+    }
+
+    public static List<byte[]> getByteCode(Path projectPath, Path destinationPath, String className,
+                                           Path targetCodePath, String[] testPaths, ExecutionSetting executionSetting)
+            throws IOException {
+
+        String projectName = projectPath.getFileName().toString();
+        Path pathToByteCode = projectPath.getParent().resolve(projectName + "PIT");
+        pathToByteCode = pathToByteCode.resolve(executionSetting.getCommandLineSetting());
+
+        for (String pathElement : className.split("\\.")){
             pathToByteCode = pathToByteCode.resolve(pathElement);
         }
         pathToByteCode = pathToByteCode.resolve("mutants");
@@ -42,7 +52,7 @@ public class PITExecutor {
         List<byte[]> bytes = new LinkedList<>();
         for (int i = 0; i < numMutants; i++){
             Path currentByteCode = pathToByteCode.resolve(String.valueOf(i))
-                    .resolve(targetClass.getCanonicalName() + ".class");
+                    .resolve(className + ".class");
             bytes.add(Files.readAllBytes(currentByteCode));
         }
 

@@ -1,12 +1,18 @@
 package ivansCode.techniques.CodeBERTTechnique.utils;
 
 import ivansCode.utils.ApplicationProperties;
+import ivansCode.utils.ThreadService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class CodeBERTExecutor {
 
@@ -15,12 +21,36 @@ public final class CodeBERTExecutor {
         ProcessBuilder processBuilder = new ProcessBuilder(initializeArray(params));
         Process process = processBuilder.start();
 
-        List<String> result = new BufferedReader(new InputStreamReader(process.getInputStream())).lines().toList();
+        AtomicReference<String> result = new AtomicReference<>();
+        Future<?> future = ThreadService.submit(() -> {
+            try (BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+                result.set(bf.readLine());
+                process.waitFor();
+            } catch (IOException e){
+                throw new IllegalStateException("Couldn't complete CodeBERT execution", e);
+            } catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+        });
 
-        if (result.isEmpty()){
-            throw new IllegalArgumentException("CodeBERT received too many tokens");
-        } else {
-            return result.get(0);
+        try {
+            future.get(2, TimeUnit.MINUTES);
+            if (result.get() == null){
+                throw new IllegalArgumentException("CodeBERT received too many tokens");
+            } else {
+                return result.get();
+            }
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Couldn't complete CodeBERT execution", e);
+        } catch (ExecutionException e){
+            throw new IllegalStateException("Couldn't complete CodeBERT execution", e);
+        } catch (TimeoutException e){
+            future.cancel(true);
+            System.out.println("Timeout occurred while executing CodeBERT");
+            return "";
+        } finally {
+            process.destroyForcibly();
         }
 
     }

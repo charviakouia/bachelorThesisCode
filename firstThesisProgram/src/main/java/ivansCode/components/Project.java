@@ -1,37 +1,61 @@
 package ivansCode.components;
 
-import com.google.common.io.Files;
+import com.github.javaparser.StaticJavaParser;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Project {
 
-    private final Class<?> subjectClass;
+    private final String subjectClassName;
+    private final String simpleSubjectClassName;
     private final Path sourceCodePath;
-    private final String[] testClassNames;
+    private final Path targetCodePath;
+    private final Path projectPath;
+    private final Set<String> testMethodNames;
+    private final String originalSourceCode;
 
-    public Project(Class<?> subjectClass, Path sourceCodePath, String[] testClassNames) {
-        this.subjectClass = subjectClass;
+    public Project(String subjectClassName, String simpleSubjectClassName, Path sourceCodePath, Path targetCodePath,
+                   Path projectPath, Set<String> testMethodNames) throws IOException {
+
+        this.subjectClassName = subjectClassName;
+        this.simpleSubjectClassName = simpleSubjectClassName;
         this.sourceCodePath = sourceCodePath;
-        this.testClassNames = testClassNames;
+        this.targetCodePath = targetCodePath;
+        this.projectPath = projectPath;
+        this.testMethodNames = new HashSet<>(testMethodNames);
+        this.originalSourceCode = StaticJavaParser.parse(sourceCodePath.toFile()).toString();
+
     }
 
-    public String getOriginalSourceCode() throws IOException {
-        return String.join("", Files.readLines(sourceCodePath.toFile(), StandardCharsets.UTF_8));
+    public String getOriginalSourceCode() {
+        return originalSourceCode;
     }
 
-    public Class<?> getSubjectClass() {
-        return subjectClass;
+    public Path getTargetCodePath() {
+        return targetCodePath;
+    }
+
+    public String getSubjectClassName() {
+        return subjectClassName;
+    }
+
+    public String getSimpleSubjectClassName() {
+        return simpleSubjectClassName;
     }
 
     public Path getSourceCodePath() {
         return sourceCodePath;
     }
 
-    public String[] getTestClassNames() {
-        return testClassNames;
+    public Set<String> getTestMethodNames() {
+        return new HashSet<>(testMethodNames);
+    }
+
+    public Path getProjectPath() {
+        return projectPath;
     }
 
 }

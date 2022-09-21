@@ -52,13 +52,12 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.8.2</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
-            <scope>compile</scope>
+            <version>5.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
@@ -93,11 +92,13 @@
             <artifactId>pitest-maven</artifactId>
             <version>1.9.3</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-entry</artifactId>
             <version>1.9.3</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-junit5-plugin</artifactId>
@@ -107,11 +108,6 @@
             <groupId>org.jboss.windup.decompiler</groupId>
             <artifactId>decompiler-fernflower</artifactId>
             <version>5.3.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>ivansCode</groupId>
-            <artifactId>exampleProject</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

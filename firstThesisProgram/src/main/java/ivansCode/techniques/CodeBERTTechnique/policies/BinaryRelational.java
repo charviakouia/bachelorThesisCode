@@ -2,54 +2,51 @@ package ivansCode.techniques.CodeBERTTechnique.policies;
 
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.expr.UnaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import ivansCode.techniques.CodeBERTTechnique.components.CodeBERTOption;
 import ivansCode.techniques.CodeBERTTechnique.components.VariableTypeMap;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
 import java.util.Set;
 
-public class InvertNegativesPresent extends CommonPolicy {
+public class BinaryRelational extends CommonPolicy {
 
-    private final Set<UnaryExpr.Operator> allowedOperators = Set.of(
-            UnaryExpr.Operator.MINUS
+    private final Set<BinaryExpr.Operator> allowedOperators = Set.of(
+            BinaryExpr.Operator.GREATER,
+            BinaryExpr.Operator.GREATER_EQUALS,
+            BinaryExpr.Operator.LESS,
+            BinaryExpr.Operator.LESS_EQUALS,
+            BinaryExpr.Operator.NOT_EQUALS,
+            BinaryExpr.Operator.EQUALS
     );
 
     private final Set<String> allowedReplacements = Set.of(
-            "-", ""
+            ">", ">=", "<", "<=", "==", "!="
     );
 
     @Override
     public boolean isMatch(Node node, VariableTypeMap typeMap) {
-        return node instanceof UnaryExpr && allowedOperators.contains(((UnaryExpr) node).getOperator());
+        return node instanceof BinaryExpr && allowedOperators.contains(((BinaryExpr) node).getOperator());
     }
 
     @Override
     public JavaToken getLeftOfMasked(Node node) {
-        return getLeftOfTokenRange(node.getTokenRange().get());
+        return getLastOfTokenRange(((BinaryExpr) node).getLeft().getTokenRange().get());
     }
 
     @Override
     public JavaToken getRightOfMasked(Node node) {
-        return getFirstOfTokenRange(((UnaryExpr) node).getExpression().getTokenRange().get());
+        return getFirstOfTokenRange(((BinaryExpr) node).getRight().getTokenRange().get());
     }
 
     @Override
     public String getCenterString(Node node) {
-        return ((UnaryExpr) node).getOperator().asString();
+        return ((BinaryExpr) node).getOperator().asString();
     }
 
     @Override
     public void filterOptions(List<CodeBERTOption> options, Node node, VariableTypeMap typeMap) {
         filterOptionsByInclusionInSet(options, allowedReplacements);
-    }
-
-    @Override
-    public void addOptions(List<CodeBERTOption> options, String beforeSequence, String afterSequence) {
-        if (options.stream().noneMatch(o -> o.getTokenString().isBlank())){
-            includeOption(options, beforeSequence + afterSequence, "", 0.1);
-        }
     }
 
 }

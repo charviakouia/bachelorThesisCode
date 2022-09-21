@@ -15,43 +15,44 @@ public final class IOUtility {
 
     private IOUtility(){}
 
-    public static byte[] compileTo(Path destinationPath, String name, String sourceCode, boolean deleteIfExists)
+    public static byte[] compileTo(Path destinationPath, String name, String sourceCode)
             throws IOException {
+
         Files.createDirectories(destinationPath);
-        File file = Paths.get(destinationPath.toString(), name + ".java").toFile();
-        if (!Files.exists(file.toPath())){
-            Files.createFile(file.toPath());
-        } else if (deleteIfExists){
-            Files.delete(file.toPath());
-            Files.createFile(file.toPath());
-        } else {
-            return null;
+
+        File javaFile = Paths.get(destinationPath.toString(), name + ".java").toFile();
+        if (Files.exists(javaFile.toPath())){
+            Files.delete(javaFile.toPath());
         }
-        Files.writeString(file.toPath(), sourceCode);
+        Files.createFile(javaFile.toPath());
+        Files.writeString(javaFile.toPath(), sourceCode);
+
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        if (compiler.run(null, null, null, file.getPath()) != 0){
+        if (compiler.run(null, null, null, javaFile.getPath()) != 0){
+            return null;
+        } else if (!Files.exists(Paths.get(destinationPath.toString(), name + ".class"))){
             return null;
         } else {
             return Files.readAllBytes(Paths.get(destinationPath.toString(), name + ".class"));
         }
+
     }
 
-    public static void saveTo(Path destinationPath, String name, String type, byte[] content, boolean deleteIfExists)
-            throws IOException {
+    public static void saveTo(Path destinationPath, String name, String type, byte[] content) throws IOException {
+
         Files.createDirectories(destinationPath);
+
         File file = Paths.get(destinationPath.toString(), name + type).toFile();
-        if (!Files.exists(file.toPath())){
-            Files.createFile(file.toPath());
-        } else if (deleteIfExists){
+        if (Files.exists(file.toPath())){
             Files.delete(file.toPath());
-            Files.createFile(file.toPath());
-        } else {
-            return;
         }
+        Files.createFile(file.toPath());
         Files.write(file.toPath(), content);
+
     }
 
     public static void clearDirectory(Path path) throws IOException {
+
         Files.list(path).forEach(filePath -> {
             try {
                 if (Files.isDirectory(filePath)){
@@ -63,15 +64,7 @@ public final class IOUtility {
                 throw new IllegalStateException("Couldn't clear the directory");
             }
         });
-    }
-
-    /*
-    public static void main(String[] args) throws IOException {
-
-        ApplicationProperties.readApplicationProperties();
-        clearDirectory(ApplicationProperties.getTempPath());
 
     }
-     */
 
 }

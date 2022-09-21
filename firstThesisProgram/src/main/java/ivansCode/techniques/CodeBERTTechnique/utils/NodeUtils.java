@@ -142,16 +142,4 @@ public final class NodeUtils {
         return a.toString().replaceAll("\\s+", " ").trim();
     }
 
-    /*
-    public static void main(String[] args){
-        String code = "class A { int c = 5; Object a = c * ((-c) - 7) + 8; }";
-        CompilationUnit unit = StaticJavaParser.parse(code);
-        List<Node> nodes = unit.stream(Node.TreeTraversal.PREORDER).toList();
-        for (Node node : nodes){
-            System.out.printf("Name '%s', value '%s'%s", node.getClass().getSimpleName(),
-                    NodeUtils.nodeToString(node), System.lineSeparator());
-        }
-    }
-     */
-
 }

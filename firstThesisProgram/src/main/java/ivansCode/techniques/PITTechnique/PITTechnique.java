@@ -1,5 +1,6 @@
 package ivansCode.techniques.PITTechnique;
 
+import com.github.javaparser.ParseProblemException;
 import ivansCode.components.Mutant;
 import ivansCode.components.techniques.Technique;
 import ivansCode.techniques.PITTechnique.utils.FernFlowerExecutor;
@@ -11,6 +12,7 @@ import org.jetbrains.java.decompiler.main.Fernflower;
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,24 +22,34 @@ public class PITTechnique implements Technique {
 
     private final List<Mutant> mutants = new LinkedList<>();
     private final Iterator<Mutant> iterator;
+    private final PITExecutor.ExecutionSetting setting;
 
-    public PITTechnique(Path sourceCodePath, Class<?> clazz) throws IOException {
-        List<byte[]> bytes =
-                PITExecutor.getByteCode(ApplicationProperties.getTempPath(), clazz, sourceCodePath, new String[]{});
+    public PITTechnique(Path projectPath, Path targetCodePath, String originalSourceCode, String className,
+                        String simpleClassName, PITExecutor.ExecutionSetting setting) throws IOException {
+        IOUtility.saveTo(targetCodePath.getParent(), simpleClassName, ".java",
+                originalSourceCode.getBytes(StandardCharsets.UTF_8));
+        List<byte[]> bytes = PITExecutor.getByteCode(projectPath, ApplicationProperties.getTempPath(), className,
+                targetCodePath, new String[]{}, setting);
         IOUtility.clearDirectory(ApplicationProperties.getTempPath());
         for (byte[] byteCode : bytes){
-            String decompiledCode =
-                    FernFlowerExecutor.getDecompiledCode(byteCode, clazz, ApplicationProperties.getTempPath());
-            IOUtility.clearDirectory(ApplicationProperties.getTempPath());
-            Mutant currentMutant = new Mutant(clazz, byteCode, decompiledCode);
-            mutants.add(currentMutant);
+            try {
+                String decompiledCode = FernFlowerExecutor.getDecompiledCode(byteCode, simpleClassName,
+                        ApplicationProperties.getTempPath());
+                Mutant currentMutant = new Mutant(className, byteCode, decompiledCode);
+                this.mutants.add(currentMutant);
+            } catch (ParseProblemException e){
+                System.out.println("Couldn't decompile a PIT mutant");
+            } finally {
+                IOUtility.clearDirectory(ApplicationProperties.getTempPath());
+            }
         }
-        iterator = mutants.iterator();
+        this.iterator = mutants.iterator();
+        this.setting = setting;
     }
 
     @Override
     public String getDescription() {
-        return "__name_PIT__";
+        return String.format("__name_PIT__setting_%s__", setting.getCommandLineSetting());
     }
 
     @Override

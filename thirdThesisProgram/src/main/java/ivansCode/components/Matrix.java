@@ -1,7 +1,5 @@
 package ivansCode.components;
 
-import ivansCode.components.metrics.MutantSet;
-import ivansCode.components.metrics.SetCover;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
@@ -65,16 +63,6 @@ public class Matrix {
 
     public boolean wasKilled(String testName, int mutantId){
         return matrix[testNameToIndex.get(testName)][mutantIdToIndex.get(mutantId)];
-    }
-
-    public Set<String> getMinimumTests(){
-        Map<String, Set<Integer>> testNameToMutantSet = getTestCoverMap();
-        return SetCover.greedyBigStep(testNameToMutantSet, 2);
-    }
-
-    public Set<Integer> getDisjointMutants(){
-        Map<Integer, Set<String>> killMap = getKillMap();
-        return MutantSet.disjointMutantSet(killMap);
     }
 
     public Set<String> getAllTests(){

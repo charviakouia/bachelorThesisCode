@@ -1,5 +1,6 @@
 package ivansCode.techniques.CodeBERTTechnique;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -29,7 +30,6 @@ public class CodeBERTTechnique implements Technique {
     private final double thresholdTo;
     private final boolean useAllOperators;
     private final CompilationUnit compilationUnit;
-    private final Class<?> originalClass;
     private final String originalClassName;
 
     private boolean cacheAvailable = false;
@@ -41,20 +41,24 @@ public class CodeBERTTechnique implements Technique {
     private final VariableTypeMap typeMap;
 
     public CodeBERTTechnique(double thresholdFrom, double thresholdTo, boolean useAllOperators, String sourceCode,
-                             Class<?> originalClass) {
+                             String originalClassName) {
         this.thresholdFrom = thresholdFrom;
         this.thresholdTo = thresholdTo;
         this.useAllOperators = useAllOperators;
-        this.originalClass = originalClass;
-        this.originalClassName = originalClass.getSimpleName();
-        this.compilationUnit = StaticJavaParser.parse(sourceCode);
+        this.originalClassName = originalClassName;
+        try {
+            this.compilationUnit = StaticJavaParser.parse(sourceCode);
+        } catch (ParseProblemException e){
+            throw new IllegalArgumentException(String.format("Can't parse code '%s' for class '%s'",
+                    sourceCode, originalClassName), e);
+        }
         this.nodeIterator = compilationUnit.stream(Node.TreeTraversal.PREORDER).iterator();
         this.policies = Lists.newArrayList(
                 new BinaryArithmetic(),
                 new BinaryAssignment(),
                 new BinaryBitwise(),
                 new BinaryConditional(),
-                new Constants(),
+                new BinaryRelational(),
                 new IncrementsAbsentLeft(),
                 new IncrementsAbsentRight(),
                 new IncrementsPresent(),
@@ -67,6 +71,7 @@ public class CodeBERTTechnique implements Technique {
         );
         if (useAllOperators) {
             this.policies.addAll(List.of(
+                    new Constants(),
                     new NumericalExpressions(),
                     new BooleanExpressions(),
                     new Variables(),
@@ -83,7 +88,6 @@ public class CodeBERTTechnique implements Technique {
         this.thresholdTo = 1;
         this.useAllOperators = true;
         this.compilationUnit = StaticJavaParser.parse(sourceCode);
-        this.originalClass = null;
         this.originalClassName = originalClassName;
         this.nodeIterator = compilationUnit.stream(Node.TreeTraversal.PREORDER).iterator();
         this.policies = new LinkedList<>(policies);
@@ -154,7 +158,8 @@ public class CodeBERTTechnique implements Technique {
             String completeCode = codeSplitter.getStringForSection(CodeSplitter.Section.PREFIX) +
                     " " + mutantCode + " " + codeSplitter.getStringForSection(CodeSplitter.Section.SUFFIX);
             Mutant mutant = getMutant(completeCode);
-            if (mutant != null) {
+            if (mutant != null){
+                mutant.setGeneratedBy(policy.getClass().getSimpleName());
                 mutantSet.add(mutant);
             }
         }
@@ -230,20 +235,27 @@ public class CodeBERTTechnique implements Technique {
     }
 
     private Mutant getMutant(String mutatedCode) {
+        /*
         try {
             byte[] mutatedBytes = IOUtility.compileTo(
                     ApplicationProperties.getTempPath(),
                     originalClassName,
-                    mutatedCode, true);
+                    mutatedCode);
             IOUtility.clearDirectory(ApplicationProperties.getTempPath());
             if (mutatedBytes == null) {
                 return null;
             } else {
-                return new Mutant(originalClass, mutatedBytes, mutatedCode);
+                return new Mutant(originalClassName, mutatedBytes, mutatedCode);
             }
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Mutator cannot continue: Compilation error", e);
+        }
+         */
+        try {
+            return new Mutant(originalClassName, null, mutatedCode);
+        } catch (ParseProblemException e){
+            return null;
         }
     }
 

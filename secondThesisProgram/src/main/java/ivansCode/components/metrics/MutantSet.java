@@ -59,7 +59,21 @@ public final class MutantSet {
 
     }
 
-    public static double subsumption(Map<Integer, Set<String>> mapA, Map<Integer, Set<String>> mapB){
+    public static double subsumption(Map<Integer, Set<String>> mapA, Map<Integer, Set<String>> mapB,
+                                     Set<Set<String>> disjointUniverse){
+
+        Set<Set<String>> upper = new HashSet<>(mapB.values());
+        upper.retainAll(mapA.values());
+        upper.retainAll(disjointUniverse);
+
+        Set<Set<String>> lower = new HashSet<>(mapB.values());
+        lower.retainAll(disjointUniverse);
+
+        return (double) upper.size() / lower.size();
+
+        /*
+        retainEntriesFromUniverse(mapA, universe);
+        retainEntriesFromUniverse(mapB, universe);
 
         Set<Integer> djmA = disjointMutantSet(mapA);
         Set<Set<String>> djmATests = new HashSet<>();
@@ -86,6 +100,21 @@ public final class MutantSet {
         djmOfDjmAUnionDjmBMinusDjmATests.removeAll(djmATests);
 
         return 1 - ((double) djmOfDjmAUnionDjmBMinusDjmATests.size()) / djmB.size();
+         */
+
+    }
+
+    private static void retainEntriesFromUniverse(Map<Integer, Set<String>> mapA, Set<Set<String>> universe) {
+
+        Set<Integer> toRemove = new HashSet<>();
+        for (Map.Entry<Integer, Set<String>> entry : mapA.entrySet()){
+            if (!universe.contains(entry.getValue())){
+                toRemove.add(entry.getKey());
+            }
+        }
+        for (Integer key : toRemove){
+            mapA.remove(key);
+        }
 
     }
 

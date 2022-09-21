@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ class MetricCalculatorTest {
     @Test
     void testVariety(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, new HashSet<>());
         Assertions.assertEquals(0.4, calculator.getVariety(), 0.00001);
 
     }
@@ -61,43 +62,44 @@ class MetricCalculatorTest {
     @Test
     void testEfficiency(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, new HashSet<>());
         Assertions.assertEquals(0.0666666666, calculator.getEfficiency(), 0.00001);
 
     }
 
     @Test
-    void testEasinessOverDisjointSet(){
+    void testEasiness(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, Set.of(Set.of("C")));
         double avg = BasicMath.getArithmeticAverage(
-                new LinkedList<>(calculator.getEasinessValuesOverDisjointSet().values()));
-        Assertions.assertEquals(0.3, avg, 0.00001);
+                new LinkedList<>(calculator.getEasinessValuesOverUniversallyDisjointSet().values()));
+        Assertions.assertEquals(0.2, avg, 0.00001);
 
-    }
-
-    @Test
-    void testEasinessOverNonEquivalentSet(){
-
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
-        double avg = BasicMath.getArithmeticAverage(
-                new LinkedList<>(calculator.getEasinessValuesOverNonEquivalentSet().values()));
-        Assertions.assertEquals(0.4, avg, 0.00001);
+        MetricCalculator calculatorA = new MetricCalculator(matrix, testGroupMap,
+                Set.of(Set.of("C"), Set.of("A", "B")));
+        double avgA = BasicMath.getArithmeticAverage(
+                new LinkedList<>(calculatorA.getEasinessValuesOverUniversallyDisjointSet().values()));
+        Assertions.assertEquals(0.3, avgA, 0.00001);
 
     }
 
     @Test
     void testInflation(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
-        Assertions.assertEquals(0.6666666666, calculator.getInflation(), 0.00001);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap,
+                Set.of(Set.of("A", "B"), Set.of("C")));
+        Assertions.assertEquals(2, calculator.getInflation(), 0.00001);
+
+        MetricCalculator calculatorA = new MetricCalculator(matrix, testGroupMap,
+                Set.of(Set.of("C")));
+        Assertions.assertEquals(5, calculatorA.getInflation(), 0.00001);
 
     }
 
     @Test
     void testMutationScore(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, new HashSet<>());
         Assertions.assertEquals(0.6666666666, calculator.getMutationScore(), 0.00001);
 
     }
@@ -105,7 +107,7 @@ class MetricCalculatorTest {
     @Test
     void testEquivalenceRate(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, new HashSet<>());
         Assertions.assertEquals(0.3333333333, calculator.getEquivalenceRate(), 0.00001);
 
     }
@@ -113,7 +115,7 @@ class MetricCalculatorTest {
     @Test
     void testCoupling(){
 
-        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap);
+        MetricCalculator calculator = new MetricCalculator(matrix, testGroupMap, new HashSet<>());
         double avg = BasicMath.getArithmeticAverage(
                 new LinkedList<>(calculator.getCouplingValues().values()));
         Assertions.assertEquals(0.8, avg, 0.00001);

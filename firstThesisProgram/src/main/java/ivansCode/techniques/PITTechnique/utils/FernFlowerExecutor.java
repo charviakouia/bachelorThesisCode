@@ -1,5 +1,6 @@
 package ivansCode.techniques.PITTechnique.utils;
 
+import com.github.javaparser.StaticJavaParser;
 import ivansCode.utils.ApplicationProperties;
 import ivansCode.utils.StringUtils;
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
@@ -13,9 +14,9 @@ import java.util.stream.Collectors;
 
 public class FernFlowerExecutor {
 
-    public static String getDecompiledCode(byte[] byteCode, Class<?> clazz, Path destinationPath) throws IOException {
+    public static String getDecompiledCode(byte[] byteCode, String className, Path destinationPath) throws IOException {
 
-        Path pathToByteCode = destinationPath.resolve(clazz.getCanonicalName() + ".class");
+        Path pathToByteCode = destinationPath.resolve(className + ".class");
         Files.createFile(pathToByteCode);
         Files.write(pathToByteCode, byteCode);
 
@@ -26,10 +27,9 @@ public class FernFlowerExecutor {
 
         ConsoleDecompiler.main(arr);
 
-        Path pathToJavaCode = destinationPath.resolve(clazz.getCanonicalName() + ".java");
-        List<String> lines = Files.readAllLines(pathToJavaCode);
+        Path pathToJavaCode = destinationPath.resolve(className + ".java");
 
-        return StringUtils.normalizeWhitespace(String.join("", lines));
+        return StaticJavaParser.parse(pathToJavaCode.toFile()).toString();
 
     }
 

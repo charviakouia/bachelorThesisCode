@@ -8,9 +8,13 @@ import java.util.Map;
 public class TestResults {
 
     private final Map<String, Boolean> passedMap = new HashMap<>();
+    private int numPassedTests = 0;
 
     public void setPassed(String testName, boolean passed){
         passedMap.put(testName, passed);
+        if (passed){
+            numPassedTests++;
+        }
     }
 
     @Override
@@ -22,6 +26,10 @@ public class TestResults {
         for (Map.Entry<String, Boolean> entry : passedMap.entrySet()){
             matrix.addEntry(entry.getKey(), mutant, !entry.getValue());
         }
+    }
+
+    public int getNumPassedTests(){
+        return numPassedTests;
     }
 
 }

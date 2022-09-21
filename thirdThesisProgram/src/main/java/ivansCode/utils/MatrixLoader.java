@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,13 +23,16 @@ public final class MatrixLoader {
                 .split("\\|")).filter(s -> !s.isEmpty()).mapToInt(Integer::parseInt).boxed()
                 .collect(Collectors.toSet());
 
+        /*
         List<String> equivalentMutantsDataList = Files.readAllLines(outputPath.resolve("equivalentMutants.txt"));
         String equivalentMutantsData = equivalentMutantsDataList.isEmpty() ? "" : equivalentMutantsDataList.get(0);
         Set<Integer> equivalentMutantsSet = Arrays.stream(equivalentMutantsData.split("\\s*,\\s*"))
                 .filter(s -> !s.isEmpty()).mapToInt(s -> Integer.parseInt(s.trim())).boxed()
                 .collect(Collectors.toSet());
+         */
 
-        return new Matrix(killRelation, testSet, mutantIdSet, equivalentMutantsSet);
+        // return new Matrix(killRelation, testSet, mutantIdSet, equivalentMutantsSet);
+        return new Matrix(killRelation, testSet, mutantIdSet, new HashSet<>());
 
     }
 

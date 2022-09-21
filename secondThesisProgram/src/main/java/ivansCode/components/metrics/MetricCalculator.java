@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MetricCalculator {
 
@@ -16,23 +17,31 @@ public class MetricCalculator {
     private final Set<String> completeTestSet;
     private final Set<Integer> completeMutantSet;
     private final Set<Integer> disjointMutantSet;
+    private final Set<Set<String>> universallyDisjointMutantSet;
     private final Set<Integer> nonEquivalentMutantSet;
     private final Set<Integer> killedMutants;
     private final Set<Integer> equivalentMutantSet;
 
+    private final Integer numMutants;
+
     private final Map<String, Set<String>> testGroupMap;
 
-    public MetricCalculator(Matrix matrix, Map<String, Set<String>> testGroupMap){
+    public MetricCalculator(Matrix matrix, Map<String, Set<String>> testGroupMap, Set<Set<String>> disjointUniverse){
 
         this.matrix = matrix;
         this.minimumTestSet = matrix.getMinimumTests();
         this.completeTestSet = matrix.getAllTests();
         this.completeMutantSet = matrix.getAllMutants();
         this.disjointMutantSet = matrix.getDisjointMutants();
+        this.universallyDisjointMutantSet = matrix.getAllMutants().stream().map(matrix::getKillingTests)
+                .collect(Collectors.toSet());
+        this.universallyDisjointMutantSet.retainAll(disjointUniverse);
         this.nonEquivalentMutantSet = matrix.getNonEquivalentMutants();
         this.killedMutants = matrix.getKilledMutants();
         this.equivalentMutantSet = matrix.getEquivalentMutants();
         this.testGroupMap = testGroupMap;
+
+        this.numMutants = this.completeMutantSet.size();
 
     }
 
@@ -44,24 +53,25 @@ public class MetricCalculator {
         return (double) minimumTestSet.size() / (completeTestSet.size() * completeMutantSet.size());
     }
 
-    public Map<Integer, Double> getEasinessValuesOverDisjointSet(){
-        Map<Integer, Double> result = new HashMap<>();
-        for (Integer currentMutant : disjointMutantSet){
-            result.put(currentMutant, ((double) matrix.getKillingTests(currentMutant).size()) / completeTestSet.size());
+    public Map<Set<String>, Double> getEasinessValuesOverUniversallyDisjointSet(){
+        Map<Set<String>, Double> result = new HashMap<>();
+        for (Set<String> currentMutant : universallyDisjointMutantSet){
+            result.put(currentMutant, ((double) currentMutant.size()) / completeTestSet.size());
         }
         return result;
     }
 
-    public Map<Integer, Double> getEasinessValuesOverNonEquivalentSet(){
+    public Map<Integer, Double> getEasinessValuesOverKilledSet(){
         Map<Integer, Double> result = new HashMap<>();
-        for (Integer currentMutant : nonEquivalentMutantSet){
+        for (Integer currentMutant : killedMutants){
             result.put(currentMutant, ((double) matrix.getKillingTests(currentMutant).size()) / completeTestSet.size());
         }
         return result;
     }
 
     public double getInflation(){
-        return ((double) completeMutantSet.size() - disjointMutantSet.size()) / completeMutantSet.size();
+        return ((double) completeMutantSet.size() - universallyDisjointMutantSet.size())
+                / universallyDisjointMutantSet.size();
     }
 
     public double getMutationScore(){
@@ -88,6 +98,10 @@ public class MetricCalculator {
             map.put(group.getKey(), maxValue);
         }
         return map;
+    }
+
+    public int getNumMutants(){
+        return numMutants;
     }
 
 }
